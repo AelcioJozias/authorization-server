@@ -34,7 +34,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .secret(encoder.encode("web123"))
                 .authorizedGrantTypes("password", "refresh_token")
                 .scopes("write", "read")
-                .accessTokenValiditySeconds(12000);
+                .accessTokenValiditySeconds(120)
+                .refreshTokenValiditySeconds(1200);
     }
 
     @Override
@@ -42,11 +43,11 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         security.checkTokenAccess("isAuthenticated()");
     }
 
-    // essa parte só é necesário para esse fluxo grant_type que é o Resource Owner Password Credentials Grant:
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints.authenticationManager(authenticationManager)
-        .userDetailsService(userDetailsService);
+        .userDetailsService(userDetailsService)
+        .reuseRefreshTokens(false);
     }
 
 }
