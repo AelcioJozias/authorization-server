@@ -47,7 +47,26 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
                 .and()
                 .withClient("checktoken")
-                .secret(encoder.encode("check123"));
+                .secret(encoder.encode("check123"))
+
+
+
+
+
+                //url para autenticar:
+                // http://localhost:8081/oauth/authorize?response_type=code&client_id=api_analytics&state=abc&redirect_uri=http://aplicacao-cliente
+                .and()
+                .withClient("api_analytics")
+                .secret(encoder.encode("api123"))
+                .authorizedGrantTypes("authorization_code")
+                .scopes("write", "read")
+                .redirectUris("http://aplicacao-cliente")
+
+
+        ;
+
+
+
 
     }
 
