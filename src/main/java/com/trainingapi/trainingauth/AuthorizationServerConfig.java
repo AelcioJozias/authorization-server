@@ -60,7 +60,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .secret(encoder.encode("api123"))
                 .authorizedGrantTypes("authorization_code")
                 .scopes("write", "read")
-                .redirectUris("http://aplicacao-cliente")
+                .redirectUris("http://127.0.0.1:5500")
 
 
         ;
