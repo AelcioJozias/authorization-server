@@ -10,6 +10,10 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.CompositeTokenGranter;
+import org.springframework.security.oauth2.provider.TokenGranter;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableAuthorizationServer
@@ -49,10 +53,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .withClient("checktoken")
                 .secret(encoder.encode("check123"))
 
-
-
-
-
                 //url para autenticar:
                 // http://localhost:8081/oauth/authorize?response_type=code&client_id=api_analytics&state=abc&redirect_uri=http://aplicacao-cliente
                 .and()
@@ -60,10 +60,20 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .secret(encoder.encode("api123"))
                 .authorizedGrantTypes("authorization_code")
                 .scopes("write", "read")
-                .redirectUris("http://127.0.0.1:5500")
+                .redirectUris("http://127.0.0.1:5500", "http://aplicacao-cliente")
 
 
-        ;
+                // url pra autenticar no implicit grant type
+                // http://localhost:8081/oauth/authorize?response_type=token&client_id=webadmin&state=abc&redirect_uri=http://aplicacao-cliente
+                .and()
+                .withClient("webadmin")
+                .scopes("write", "read")
+                .authorizedGrantTypes("implicit")
+                .redirectUris("http://aplicacao-cliente")
+
+                 //  URL para autenticar usando pkace com code_challange_plain
+        ;        //http://localhost:8081/oauth/authorize?response_type=code&client_id=api_analytics&state&redirect_uri=http://aplicacao-cliente&code_challenge=teste123&code_challenge_method=plain
+
 
 
 
@@ -79,7 +89,19 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints.authenticationManager(authenticationManager)
         .userDetailsService(userDetailsService)
-        .reuseRefreshTokens(false);
+        .reuseRefreshTokens(false)
+        .tokenGranter(tokenGranter(endpoints));
+    }
+
+    private TokenGranter tokenGranter(AuthorizationServerEndpointsConfigurer endpoints) {
+        var pkceAuthorizationCodeTokenGranter = new PkceAuthorizationCodeTokenGranter(endpoints.getTokenServices(),
+                endpoints.getAuthorizationCodeServices(), endpoints.getClientDetailsService(),
+                endpoints.getOAuth2RequestFactory());
+
+        var granters = Arrays.asList(
+                pkceAuthorizationCodeTokenGranter, endpoints.getTokenGranter());
+
+        return new CompositeTokenGranter(granters);
     }
 
 }
