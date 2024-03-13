@@ -44,7 +44,11 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .secret(encoder.encode("faturar123"))
                 .authorizedGrantTypes("client_credentials")
                 .scopes("write", "read")
-        ;
+
+                .and()
+                .withClient("checktoken")
+                .secret(encoder.encode("check123"));
+
     }
 
     @Override
