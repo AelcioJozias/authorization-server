@@ -29,13 +29,22 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         
         // configurando o token de acesso
         clients
-            .inMemory()
+                .inMemory()
                 .withClient("training-web")
                 .secret(encoder.encode("web123"))
                 .authorizedGrantTypes("password", "refresh_token")
                 .scopes("write", "read")
                 .accessTokenValiditySeconds(120)
-                .refreshTokenValiditySeconds(1200);
+                .refreshTokenValiditySeconds(1200)
+
+                .and()
+
+                // exemplo de uma autotização client_credentials, onde não há um resource owner
+                .withClient("faturamento")
+                .secret(encoder.encode("faturar123"))
+                .authorizedGrantTypes("client_credentials")
+                .scopes("write", "read")
+        ;
     }
 
     @Override
