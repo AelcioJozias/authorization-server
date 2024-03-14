@@ -57,7 +57,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 // http://localhost:8081/oauth/authorize?response_type=code&client_id=api_analytics&state=abc&redirect_uri=http://aplicacao-cliente
                 .and()
                 .withClient("api_analytics")
-                .secret(encoder.encode("api123"))
+                .secret(encoder.encode(""))
                 .authorizedGrantTypes("authorization_code")
                 .scopes("write", "read")
                 .redirectUris("http://127.0.0.1:5500", "http://aplicacao-cliente")
@@ -69,11 +69,12 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .withClient("webadmin")
                 .scopes("write", "read")
                 .authorizedGrantTypes("implicit")
-                .redirectUris("http://aplicacao-cliente")
+                .redirectUris("http://aplicacao-cliente");
 
                  //  URL para autenticar usando pkace com code_challange_plain
-        ;        //http://localhost:8081/oauth/authorize?response_type=code&client_id=api_analytics&state&redirect_uri=http://aplicacao-cliente&code_challenge=teste123&code_challenge_method=plain
-
+                //http://localhost:8081/oauth/authorize?response_type=code&client_id=api_analytics&state&redirect_uri=http://aplicacao-cliente&code_challenge=teste123&code_challenge_method=plain
+                // gerando com s256
+                //http://localhost:8081/oauth/authorize?response_type=code&client_id=api_analytics&redirect_uri=http://aplicacao-cliente&code_challenge=teste123&code_challenge_method=s256
 
 
 
@@ -82,7 +83,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
-        security.checkTokenAccess("isAuthenticated()");
+        security.checkTokenAccess("isAuthenticated()").allowFormAuthenticationForClients();
     }
 
     @Override
